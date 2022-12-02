@@ -1,7 +1,9 @@
 package tr.tutorials.kotlin_todolist
 
+import android.R
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import tr.tutorials.kotlin_todolist.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -13,7 +15,14 @@ class MainActivity : AppCompatActivity() {
 		binding = ActivityMainBinding.inflate(layoutInflater)
 		setContentView(binding.root)
 
+		val	myTodolist: MutableList<String> = mutableListOf()
+		refreshListview(myTodolist)
 
+	}
 
+	private fun refreshListview(mylist:MutableList<String>)
+	{
+		val listviewAdapter = ArrayAdapter<String>(this, R.layout.simple_list_item_1, mylist)
+		binding.mylistviev.adapter = listviewAdapter
 	}
 }
