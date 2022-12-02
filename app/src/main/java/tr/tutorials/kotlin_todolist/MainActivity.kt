@@ -18,6 +18,12 @@ class MainActivity : AppCompatActivity() {
 		val	myTodolist: MutableList<String> = mutableListOf()
 		refreshListview(myTodolist)
 
+		binding.button.setOnClickListener {
+			myTodolist.add((binding.inputText.text).toString())
+			refreshListview(myTodolist)
+			binding.inputText.setText("")
+		}
+
 	}
 
 	private fun refreshListview(mylist:MutableList<String>)
