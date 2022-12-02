@@ -21,4 +21,16 @@ class DatabaseHandler(Context: Context) :
 		 	"fromuser INTEGER, content TEXT NOT NULL, FOREIGN KEY(fromuser) REFERENCES users (id))")
 		db?.execSQL(ContentTableCreate)
 	}
+
+	fun addUser(usr: usersModelClass): Long {
+		val db = this.writableDatabase
+
+		val contentValues = ContentValues()
+		contentValues.put("name", usr.name)
+		contentValues.put("passwd",  usr.passwd)
+
+		val success = db.insert("users", null, contentValues)
+		db.close()
+		return success
+	}
 }
