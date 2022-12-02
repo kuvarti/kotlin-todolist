@@ -33,4 +33,16 @@ class DatabaseHandler(Context: Context) :
 		db.close()
 		return success
 	}
+
+	fun addTODO(todo: contentModelClass): Long {
+		val db = this.writableDatabase
+
+		val contentValues = ContentValues()
+		contentValues.put("fromuser", todo.fromuser)
+		contentValues.put("content", todo.content)
+
+		val success = db.insert("content", null, contentValues)
+		db.close()
+		return success
+	}
 }
