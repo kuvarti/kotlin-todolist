@@ -1,6 +1,7 @@
 package tr.tutorials.kotlin_todolist
 
 import android.R
+import android.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ArrayAdapter
@@ -22,6 +23,20 @@ class MainActivity : AppCompatActivity() {
 			myTodolist.add((binding.inputText.text).toString())
 			refreshListview(myTodolist)
 			binding.inputText.setText("")
+		}
+
+		binding.mylistviev.setOnItemClickListener { parent, _, position, _->
+			val element = parent.getItemAtPosition(position)
+			val areusure = AlertDialog.Builder(this@MainActivity)
+			areusure.setMessage("Bu elemanı silmek istediğinizden emin misiniz : $element")
+				.setPositiveButton("Evet"){ _, _ ->
+					myTodolist.remove(element)
+					refreshListview(myTodolist)
+				}
+				.setNegativeButton("Hayır") { dialog, _->
+					dialog.dismiss()
+				}
+			areusure.create().show()
 		}
 
 	}
