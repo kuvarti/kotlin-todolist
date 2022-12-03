@@ -16,12 +16,14 @@ class MainActivity : AppCompatActivity() {
 		binding = ActivityMainBinding.inflate(layoutInflater)
 		setContentView(binding.root)
 
-		val	myTodolist: MutableList<String> = mutableListOf()
-		refreshListview(myTodolist)
+		val dbhandler: DatabaseHandler = DatabaseHandler(this)
+		refreshListview(dbhandler.viewTODO())
 
 		binding.button.setOnClickListener {
-			myTodolist.add((binding.inputText.text).toString())
-			refreshListview(myTodolist)
+
+			dbhandler.addTODO(contentModelClass(1, (binding.inputText.text).toString()))
+
+			refreshListview(dbhandler.viewTODO())
 			binding.inputText.setText("")
 		}
 
@@ -30,8 +32,8 @@ class MainActivity : AppCompatActivity() {
 			val areusure = AlertDialog.Builder(this@MainActivity)
 			areusure.setMessage("Bu elemanı silmek istediğinizden emin misiniz : $element")
 				.setPositiveButton("Evet"){ _, _ ->
-					myTodolist.remove(element)
-					refreshListview(myTodolist)
+					dbhandler.deleteTODO(contentModelClass(1, element.toString()))
+					refreshListview(dbhandler.viewTODO())
 				}
 				.setNegativeButton("Hayır") { dialog, _->
 					dialog.dismiss()

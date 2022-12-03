@@ -27,8 +27,12 @@ class DatabaseHandler(Context: Context) :
 		addUser(usersModelClass(1, "Not Login", "Elements"))
 	}
 
+	override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {
+		TODO("Not yet implemented")
+	}
+
 	@SuppressLint("Range")
-	fun viewTODO(id: Int = 1): ArrayList<contentModelClass> {
+	fun getContentlist(id: Int = 1): ArrayList<contentModelClass> {
 		val	ret: ArrayList<contentModelClass> = ArrayList<contentModelClass>()
 
 		val db = this.writableDatabase
@@ -59,6 +63,16 @@ class DatabaseHandler(Context: Context) :
 		return  ret
 	}
 
+	fun viewTODO(id: Int = 1): MutableList<String>{
+		val ret: MutableList<String> = mutableListOf()
+		val lst = getContentlist(id)
+
+		for (x in lst){
+			ret.add(x.content)
+		}
+		return ret
+	}
+
 	fun deleteTODO(con: contentModelClass): Int{
 		val db = this.writableDatabase
 		val contnt = ContentValues()
@@ -66,7 +80,7 @@ class DatabaseHandler(Context: Context) :
 
 		val success = db.delete("contents", "content = ${con.content}", null)
 		db.close()
-		return success 
+		return success
 	}
 
 	fun addUser(usr: usersModelClass): Long {
