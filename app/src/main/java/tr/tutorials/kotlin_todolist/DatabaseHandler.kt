@@ -29,7 +29,6 @@ class DatabaseHandler(Context: Context) :
 
 	fun firstdata(){
 		addUser(usersModelClass(1, "Not Login", "Elements"))
-		addTODO(contentModelClass(1, "Çöpü dök"))
 	}
 
 	override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {
@@ -82,7 +81,7 @@ class DatabaseHandler(Context: Context) :
 		val contnt = ContentValues()
 		contnt.put("content", con.content)
 
-		val success = DB.delete("contents", "content = ${con.content}", null)
+		val success = DB.delete("contents", "content = \"${con.content}\"", null)
 		DB.close()
 		return success
 	}

@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
 			areusure.setMessage("Bu elemanı silmek istediğinizden emin misiniz : $element")
 				.setPositiveButton("Evet"){ _, _ ->
 					dbhandler.deleteTODO(contentModelClass(1, element.toString()))
-					//refreshListview(dbhandler.viewTODO())
+					refreshListview(dbhandler.viewTODO())
 				}
 				.setNegativeButton("Hayır") { dialog, _->
 					dialog.dismiss()
@@ -56,8 +56,6 @@ class MainActivity : AppCompatActivity() {
 
 	private fun refreshListview(mylist: MutableList<String>)
 	{
-		if (mylist == null)
-			return
 		val listviewAdapter = ArrayAdapter<String>(this, R.layout.simple_list_item_1, mylist)
 		binding.mylistviev.adapter = listviewAdapter
 	}
