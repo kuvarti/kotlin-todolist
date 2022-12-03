@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import tr.tutorials.kotlin_todolist.databinding.ActivityMainBinding
+import java.io.Console
+import kotlin.math.log
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,13 +18,22 @@ class MainActivity : AppCompatActivity() {
 		binding = ActivityMainBinding.inflate(layoutInflater)
 		setContentView(binding.root)
 
+
 		val dbhandler: DatabaseHandler = DatabaseHandler(this)
+		dbhandler.firstdata()
+
 		refreshListview(dbhandler.viewTODO())
+
 
 		binding.button.setOnClickListener {
 
-			dbhandler.addTODO(contentModelClass(1, (binding.inputText.text).toString()))
+			val errname = dbhandler.addTODO(contentModelClass(1, (binding.inputText.text).toString()))
 
+			if (errname < 0) {
+				val alerd = AlertDialog.Builder(this@MainActivity)
+				alerd.setMessage("$errname : hata kodu")
+				alerd.create().show()
+			}
 			refreshListview(dbhandler.viewTODO())
 			binding.inputText.setText("")
 		}
@@ -33,7 +44,7 @@ class MainActivity : AppCompatActivity() {
 			areusure.setMessage("Bu elemanı silmek istediğinizden emin misiniz : $element")
 				.setPositiveButton("Evet"){ _, _ ->
 					dbhandler.deleteTODO(contentModelClass(1, element.toString()))
-					refreshListview(dbhandler.viewTODO())
+					//refreshListview(dbhandler.viewTODO())
 				}
 				.setNegativeButton("Hayır") { dialog, _->
 					dialog.dismiss()
@@ -43,8 +54,10 @@ class MainActivity : AppCompatActivity() {
 
 	}
 
-	private fun refreshListview(mylist:MutableList<String>)
+	private fun refreshListview(mylist: MutableList<String>)
 	{
+		if (mylist == null)
+			return
 		val listviewAdapter = ArrayAdapter<String>(this, R.layout.simple_list_item_1, mylist)
 		binding.mylistviev.adapter = listviewAdapter
 	}

@@ -1,13 +1,14 @@
 package tr.tutorials.kotlin_todolist
 
-import android.annotation.SuppressLint //(?)
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import java.util.ArrayList
+import kotlin.math.log
 
 class DatabaseHandler(Context: Context) :
 		SQLiteOpenHelper(Context, DATABASE_NAME, null, DATABASE_VERSION){
@@ -24,26 +25,28 @@ class DatabaseHandler(Context: Context) :
 		val ContentTableCreate = ("CREATE TABLE contents ( " +
 		 	"fromuser INTEGER, content TEXT NOT NULL, FOREIGN KEY(fromuser) REFERENCES users (id))")
 		db?.execSQL(ContentTableCreate)
+	}
+
+	fun firstdata(){
 		addUser(usersModelClass(1, "Not Login", "Elements"))
+		addTODO(contentModelClass(1, "Çöpü dök"))
 	}
 
 	override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {
 		TODO("Not yet implemented")
 	}
 
-	@SuppressLint("Range")
 	fun getContentlist(id: Int = 1): ArrayList<contentModelClass> {
+		val DB = this.writableDatabase
 		val	ret: ArrayList<contentModelClass> = ArrayList<contentModelClass>()
-
-		val db = this.writableDatabase
 		var cursor: Cursor? = null
-
-		val viewlist = "SELECT content FROM contents WHERE fromuser == $id"
+		val viewlist = "SELECT * FROM contents"
 
 		try {
-			cursor = db.rawQuery(viewlist,null)
+			cursor = DB.rawQuery(viewlist,null)
 		} catch (e: SQLiteException) {
-			db.execSQL(viewlist)
+			DB.execSQL(viewlist)
+			DB.close()
 			return ArrayList()
 		}
 
@@ -53,13 +56,14 @@ class DatabaseHandler(Context: Context) :
 
 		if (cursor.moveToFirst()) {
 			do {
-				fromuser = cursor.getInt(cursor.getColumnIndex("fromuser"))
-				text = cursor.getString(cursor.getColumnIndex("content"))
+				fromuser = cursor.getInt(cursor.getColumnIndexOrThrow("fromuser"))
+				text = cursor.getString(cursor.getColumnIndexOrThrow("content"))
 
 				td = contentModelClass(fromuser, text)
 				ret.add(td)
 			} while (cursor.moveToNext())
 		}
+		DB.close()
 		return  ret
 	}
 
@@ -74,36 +78,34 @@ class DatabaseHandler(Context: Context) :
 	}
 
 	fun deleteTODO(con: contentModelClass): Int{
-		val db = this.writableDatabase
+		val DB = this.writableDatabase
 		val contnt = ContentValues()
 		contnt.put("content", con.content)
 
-		val success = db.delete("contents", "content = ${con.content}", null)
-		db.close()
+		val success = DB.delete("contents", "content = ${con.content}", null)
+		DB.close()
 		return success
 	}
 
 	fun addUser(usr: usersModelClass): Long {
-		val db = this.writableDatabase
-
+		val DB = this.writableDatabase
 		val contentValues = ContentValues()
 		contentValues.put("name", usr.name)
-		contentValues.put("passwd",  usr.passwd)
+		contentValues.put("passw",  usr.passwd)
 
-		val success = db.insert("users", null, contentValues)
-		db.close()
+		val success = DB.insert("users", null, contentValues)
+		DB.close()
 		return success
 	}
 
 	fun addTODO(todo: contentModelClass): Long {
-		val db = this.writableDatabase
-
+		val DB = this.writableDatabase
 		val contentValues = ContentValues()
 		contentValues.put("fromuser", todo.fromuser)
 		contentValues.put("content", todo.content)
 
-		val success = db.insert("content", null, contentValues)
-		db.close()
+		val success = DB.insert("contents", null, contentValues)
+		DB.close()
 		return success
 	}
 }
