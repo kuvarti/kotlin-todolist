@@ -1,9 +1,13 @@
 package tr.tutorials.kotlin_todolist
 
+import android.annotation.SuppressLint //(?)
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
+import java.util.ArrayList
 
 class DatabaseHandler(Context: Context) :
 		SQLiteOpenHelper(Context, DATABASE_NAME, null, DATABASE_VERSION){
@@ -20,6 +24,39 @@ class DatabaseHandler(Context: Context) :
 		val ContentTableCreate = ("CREATE TABLE contents ( " +
 		 	"fromuser INTEGER, content TEXT NOT NULL, FOREIGN KEY(fromuser) REFERENCES users (id))")
 		db?.execSQL(ContentTableCreate)
+		addUser(usersModelClass(1, "Not Login", "Elements"))
+	}
+
+	@SuppressLint("Range")
+	fun viewTODO(id: Int = 1): ArrayList<contentModelClass> {
+		val	ret: ArrayList<contentModelClass> = ArrayList<contentModelClass>()
+
+		val db = this.writableDatabase
+		var cursor: Cursor? = null
+
+		val viewlist = "SELECT content FROM contents WHERE fromuser == $id"
+
+		try {
+			cursor = db.rawQuery(viewlist,null)
+		} catch (e: SQLiteException) {
+			db.execSQL(viewlist)
+			return ArrayList()
+		}
+
+		var fromuser: Int
+		var text: String
+		var td: contentModelClass
+
+		if (cursor.moveToFirst()) {
+			do {
+				fromuser = cursor.getInt(cursor.getColumnIndex("fromuser"))
+				text = cursor.getString(cursor.getColumnIndex("content"))
+
+				td = contentModelClass(fromuser, text)
+				ret.add(td)
+			} while (cursor.moveToNext())
+		}
+		return  ret
 	}
 
 	fun addUser(usr: usersModelClass): Long {
