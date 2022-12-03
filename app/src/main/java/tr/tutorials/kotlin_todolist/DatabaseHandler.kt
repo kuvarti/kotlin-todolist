@@ -59,6 +59,16 @@ class DatabaseHandler(Context: Context) :
 		return  ret
 	}
 
+	fun deleteTODO(con: contentModelClass): Int{
+		val db = this.writableDatabase
+		val contnt = ContentValues()
+		contnt.put("content", con.content)
+
+		val success = db.delete("contents", "content = ${con.content}", null)
+		db.close()
+		return success 
+	}
+
 	fun addUser(usr: usersModelClass): Long {
 		val db = this.writableDatabase
 
